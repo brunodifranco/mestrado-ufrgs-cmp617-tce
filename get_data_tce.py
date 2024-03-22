@@ -31,7 +31,7 @@ class DataTCE:
             os.makedirs(self.data_dir)
             os.chmod(self.data_dir, 0o755)
 
-        years = list(range(2016, 2024))
+        years = list(range(2016, 2025))
         for year in years:
             url = f"https://dados.tce.rs.gov.br/dados/licitacon/licitacao/ano/{year}.csv.zip"
             output_file = os.path.join(self.data_dir, f"{year}.csv.zip")
@@ -175,6 +175,13 @@ class DataTCE:
         ]
 
         df_final = pd.concat(dfs, ignore_index=True)
+
+        # Getting lect only those bids where `CD_TIPO_FASE_ATUAL=ADH`,
+        # which are the ones that have been approved,
+        # according to the TCE documentation in page 27.
+
+        df_final = df_final[(df_final["CD_TIPO_FASE_ATUAL"] == "ADH")]
+
         return df_final
 
     def saves_df_to_csv(self, df_final: DataFrame):
