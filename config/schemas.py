@@ -1,4 +1,4 @@
-dtypes = {
+raw_dtypes = {
     'CD_ORGAO': 'object',
     'NM_ORGAO': 'object',
     'NR_LICITACAO': 'float64',

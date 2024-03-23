@@ -5,7 +5,7 @@ import pandas as pd
 from pandas.core.frame import DataFrame
 from pathlib import Path
 from logging import Logger
-from config.utils import logger
+from config.utils import tce_logger
 
 
 class DataTCE:
