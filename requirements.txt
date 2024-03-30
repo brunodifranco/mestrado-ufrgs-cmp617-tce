@@ -1,8 +1,11 @@
 nltk
 yellowbrick
 scikit-learn
-polars
 pandas
 numpy
 matplotlib
 gensim
+wordcloud
+unidecode
+ipywidgets
+scipy

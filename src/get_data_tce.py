@@ -1,10 +1,11 @@
 import os
 import zipfile
 import shutil
-import polars as pl
+import pandas as pd
+from pandas.core.frame import DataFrame
 from pathlib import Path
 from logging import Logger
-from config.utils import tce_logger
+from config.utils import logger
 
 
 class DataTCE:
@@ -30,7 +31,7 @@ class DataTCE:
             os.makedirs(self.data_dir)
             os.chmod(self.data_dir, 0o755)
 
-        years = list(range(2016, 2025))
+        years = list(range(2016, 2024))
         for year in years:
             url = f"https://dados.tce.rs.gov.br/dados/licitacon/licitacao/ano/{year}.csv.zip"
             output_file = os.path.join(self.data_dir, f"{year}.csv.zip")
@@ -132,7 +133,7 @@ class DataTCE:
 
         self.logger.info("Process completed.")
 
-    def reads_and_concatenates_csv_files(self) -> pl.DataFrame:
+    def reads_and_concatenates_csv_files(self) -> DataFrame:
         """
         Reads and concatenates files.
 
@@ -143,10 +144,9 @@ class DataTCE:
         """
 
         dfs = [
-            pl.read_csv(
+            pd.read_csv(
                 os.path.join(self.data_dir, file),
-                infer_schema_length=0,
-                columns=[
+                usecols=[
                     "CD_ORGAO",
                     "NM_ORGAO",
                     "NR_LICITACAO",
@@ -174,17 +174,17 @@ class DataTCE:
             if file.endswith(".csv")
         ]
 
-        df_final = pl.concat(dfs)
-
+        df_final = pd.concat(dfs, ignore_index=True)   
+        
         # Getting only those bids where `CD_TIPO_FASE_ATUAL=ADH`,
         # which are the ones that have been approved,
         # according to the TCE documentation in page 27.
-
-        df_final = df_final.filter(pl.col("CD_TIPO_FASE_ATUAL") == "ADH")
-
+             
+        df_final = df_final[df_final["CD_TIPO_FASE_ATUAL"] == "ADH"]
+        
         return df_final
 
-    def saves_df_to_csv(self, df_final: pl.DataFrame):
+    def saves_df_to_csv(self, df_final: DataFrame):
         """
         Saves DataFrame to csv.
 
@@ -196,7 +196,7 @@ class DataTCE:
 
         os.system(f"rm -rf data/*")
 
-        df_final.write_csv(f"{self.data_dir}/tce_licitations.csv")
+        df_final.to_csv(f"{self.data_dir}/tce_licitations.csv", index=False)
 
     def get(self):
         """Runs the full process"""
@@ -213,5 +213,5 @@ class DataTCE:
 
 
 if __name__ == "__main__":
-    tce_data = DataTCE(data_dir="data", logger=tce_logger)
+    tce_data = DataTCE(data_dir="data", logger=logger)
     tce_data.get()
