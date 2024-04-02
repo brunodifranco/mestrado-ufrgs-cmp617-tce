@@ -5,7 +5,7 @@ import pandas as pd
 from pandas.core.frame import DataFrame
 from pathlib import Path
 from logging import Logger
-from config.utils import logger
+from utils.utils import logger
 
 
 class DataTCE:
@@ -20,7 +20,7 @@ class DataTCE:
         Logger.
     """
 
-    def __init__(self, data_dir: Path, logger: Logger):
+    def __init__(self, data_dir: Path, logger: Logger = logger):
         self.data_dir = data_dir
         self.logger = logger
 
@@ -213,5 +213,5 @@ class DataTCE:
 
 
 if __name__ == "__main__":
-    tce_data = DataTCE(data_dir="data", logger=logger)
+    tce_data = DataTCE(data_dir="data")
     tce_data.get()

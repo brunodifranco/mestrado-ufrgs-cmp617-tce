@@ -9,3 +9,8 @@ wordcloud
 unidecode
 ipywidgets
 scipy
+transformers
+sentence-transformers
+optuna
+bertopic
+umap-learn
