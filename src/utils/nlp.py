@@ -3,13 +3,14 @@ from typing import Union, List
 from pathlib import Path
 import numpy as np
 from unidecode import unidecode
-import spacy
+from spacy.language import Language
 from nltk.stem import RSLPStemmer
 from pandas.core.series import Series
 
 
 def remove_stop_words(
-    text: Union[List[str], Series, np.array], stop_words_path: Path = "src/utils/stop_words.txt"
+    text: Union[List[str], Series, np.array],
+    stop_words_path: Path = "src/utils/stop_words.txt",
 ) -> List[str]:
     """
     Removes stop words from a list of words.
@@ -86,12 +87,14 @@ def stemmer_pt(text: Union[List[str], Series, np.array]) -> List[str]:
     return [stemmer.stem(word) for word in text]
 
 
-def lemma_pt(text: Union[List[str], Series, np.array]) -> List[str]:
+def lemma_pt(nlp: Language, text: Union[List[str], Series, np.array]) -> List[str]:
     """
     Applies portuguese lemmatization in text.
 
     Parameters
     ----------
+    nlp: Language
+        Spacy instance.
     text: Union[List[str], Series, np.array]
         List, Series, or np.array of words.
 
@@ -101,7 +104,6 @@ def lemma_pt(text: Union[List[str], Series, np.array]) -> List[str]:
         List of words with lemmatization applied.
     """
 
-    nlp = spacy.load("pt_core_news_md", disable=["parser", "tagger", "ner"])
     doc = nlp(" ".join(text))
 
     return list(set([token.lemma_ for token in doc]))

@@ -9,6 +9,7 @@ wordcloud
 unidecode
 ipywidgets
 scipy
+spacy
 transformers
 sentence-transformers
 optuna

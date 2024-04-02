@@ -1,24 +1,17 @@
-from utils.schemas import raw_dtypes
-import pandas as pd
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
-from nltk.stem import RSLPStemmer
-import nltk
-from pathlib import Path
-from logging import Logger
-from utils.utils import logger
-from unidecode import unidecode
-from gensim.models import CoherenceModel, ldamulticore
-from gensim.corpora import Dictionary
-import numpy as np
-import re
 import json
 from typing import Union, List, Dict
+from logging import Logger
 import optuna
-
-
+from tqdm import tqdm
+import nltk
+from gensim.models import CoherenceModel, ldamulticore
+from gensim.corpora import Dictionary
 from data_cleaning import DataCleaning
+from utils.utils import logger
 from utils.nlp import preprocess, remove_stop_words, stemmer_pt, lemma_pt
+import spacy
+
+
 
 
 class LDAOptimization:
@@ -57,57 +50,48 @@ class LDAOptimization:
         # TODO - REMOVER AQUI DEPOIS
         df = df[df["ANO_LICITACAO"] >= 2021]
 
+        self.logger.info("Running NLP treatment")
+
+        df = df.assign(
+            DS_OBJETO_NLP=df["DS_OBJETO"]
+            .apply(
+                lambda x: nltk.word_tokenize(x.lower(), language="portuguese")
+            )  # Tokenize
+            .apply(lambda x: [preprocess(word) for word in x])  # Other preprocessing
+            .apply(lambda x: list(filter(None, x)))  # Removes items with none
+            .apply(remove_stop_words)  # Removes stop words
+            .apply(
+                lambda x: [word for word in x if "rs" not in word]
+            )  # Remove tokens containing "rs" (which are cities)
+        )
+
         if self.nlp_normalization_method == "stemmer":
+            self.logger.info("Running stemmer")
 
-            df = df.assign(
-                DS_OBJETO_NLP=df["DS_OBJETO"]
-                .apply(
-                    lambda x: nltk.word_tokenize(x.lower(), language="portuguese")
-                )  # Tokenize
-                .apply(
-                    lambda x: [preprocess(word) for word in x]
-                )  # Other preprocessing
-                .apply(lambda x: list(filter(None, x)))  # Removes items with none
-                .apply(remove_stop_words)  # Removes stop words
-                .apply(
-                    lambda x: [word for word in x if "rs" not in word]
-                )  # Remove tokens containing "rs" (which are cities)
-                .apply(stemmer_pt)  # Applies stemming
-            )
+            tqdm.pandas()
+            df["DS_OBJETO_NLP"] = df["DS_OBJETO_NLP"].progress_apply(
+                stemmer_pt
+            )  # Applies stemming
 
-            vec = df["DS_OBJETO_NLP"].values.tolist()
+        elif self.nlp_normalization_method == "lemmatization":
+            self.logger.info("Running lemmatization")
 
-            self.logger.info("Vector with stemmer created")
-            return vec
+            nlp = spacy.load("pt_core_news_md", disable=["parser", "tagger", "ner"])
 
-        if self.nlp_normalization_method == "lemmatization":
+            tqdm.pandas()
+            df["DS_OBJETO_NLP"] = df["DS_OBJETO_NLP"].progress_apply(
+                lambda x: lemma_pt(nlp, x)
+            )  # Aplica a lematização
 
-            df = df.assign(
-                DS_OBJETO_NLP=df["DS_OBJETO"]
-                .apply(
-                    lambda x: nltk.word_tokenize(x.lower(), language="portuguese")
-                )  # Tokenize
-                .apply(
-                    lambda x: [preprocess(word) for word in x]
-                )  # Other preprocessing
-                .apply(lambda x: list(filter(None, x)))  # Removes items with none
-                .apply(remove_stop_words)  # Removes stop words
-                .apply(
-                    lambda x: [word for word in x if "rs" not in word]
-                )  # Remove tokens containing "rs" (which are cities)
-                .apply(lemma_pt)  # Applies lemmatization
-            )
-
-            vec = df["DS_OBJETO_NLP"].values.tolist()
-
-            self.logger.info("Vector with lemmatization created")
-            return vec
 
         else:
             self.logger.error("TypeError")
             raise TypeError(
                 "Please choose either 'stemmer' or 'lemmatization' as the nlp_normalization_method"
             )
+
+        vec = df["DS_OBJETO_NLP"].values.tolist()
+        return vec
 
     def bayesian_opt_objective(
         self, trial: optuna.Trial, id2word: Dictionary, corpus: List, vec: List[str]
@@ -133,7 +117,7 @@ class LDAOptimization:
             Coherence score c-v (Cosine Similarity) of the LDA model.
         """
 
-        num_topics = trial.suggest_int("num_topics", 6, 9, step=1)
+        num_topics = trial.suggest_int("num_topics", 5, 7, step=1)
         chunksize = trial.suggest_int("chunksize", 80, 180, step=10)
         passes = trial.suggest_int("passes", 5, 20, step=1)
         alpha = trial.suggest_float("alpha", 0.01, 1, step=0.01)
@@ -235,6 +219,8 @@ class LDAOptimization:
 
 if __name__ == "__main__":
     optimizer = LDAOptimization(
-        nlp_normalization_method="stemmer", n_filter=1000, n_trials=1
+        nlp_normalization_method="lemmatization",  # method to choose: either stemmer or lemmatization
+        n_filter=500 ,
+        n_trials=50,
     )
     optimizer.run()
