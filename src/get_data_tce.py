@@ -31,7 +31,7 @@ class DataTCE:
             os.makedirs(self.data_dir)
             os.chmod(self.data_dir, 0o755)
 
-        years = list(range(2016, 2024))
+        years = list(range(2021, 2025))
         for year in years:
             url = f"https://dados.tce.rs.gov.br/dados/licitacon/licitacao/ano/{year}.csv.zip"
             output_file = os.path.join(self.data_dir, f"{year}.csv.zip")

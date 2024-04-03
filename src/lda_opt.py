@@ -12,8 +12,6 @@ from utils.nlp import preprocess, remove_stop_words, stemmer_pt, lemma_pt
 import spacy
 
 
-
-
 class LDAOptimization:
     """
     Performs Bayesian Optimization on Latent Dirichlet Allocation (LDA) model.
@@ -47,9 +45,6 @@ class LDAOptimization:
         cleaning_pipeline = DataCleaning()
         df = cleaning_pipeline.run()
 
-        # TODO - REMOVER AQUI DEPOIS
-        df = df[df["ANO_LICITACAO"] >= 2021]
-
         self.logger.info("Running NLP treatment")
 
         df = df.assign(
@@ -81,8 +76,7 @@ class LDAOptimization:
             tqdm.pandas()
             df["DS_OBJETO_NLP"] = df["DS_OBJETO_NLP"].progress_apply(
                 lambda x: lemma_pt(nlp, x)
-            )  # Aplica a lematização
-
+            )  # Applies lemmatization
 
         else:
             self.logger.error("TypeError")
@@ -210,8 +204,13 @@ class LDAOptimization:
         """
         Runs the optimizer
         """
+        self.logger.setLevel("INFO")
         vec = self.nlp_preprocessing()
+
+        self.logger.setLevel("WARNING")
         results = self.get_opt(vec)
+
+        self.logger.setLevel("INFO")
         self.save_results(results)
 
         self.logger.info("Optimizer completed!")
@@ -219,8 +218,8 @@ class LDAOptimization:
 
 if __name__ == "__main__":
     optimizer = LDAOptimization(
-        nlp_normalization_method="lemmatization",  # method to choose: either stemmer or lemmatization
-        n_filter=250 ,
-        n_trials=50,
+        nlp_normalization_method="lemmatization",  # Method to choose: either stemmer or lemmatization
+        n_filter=250,  # Minimum frequency to retain a token in the dictionary. e.g if n_filter=0 all tokens will be kept
+        n_trials=50,  # Number of trials for optimization
     )
     optimizer.run()
