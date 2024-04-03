@@ -220,7 +220,7 @@ class LDAOptimization:
 if __name__ == "__main__":
     optimizer = LDAOptimization(
         nlp_normalization_method="lemmatization",  # method to choose: either stemmer or lemmatization
-        n_filter=500 ,
+        n_filter=250 ,
         n_trials=50,
     )
     optimizer.run()
