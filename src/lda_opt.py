@@ -219,7 +219,7 @@ class LDAOptimization:
 if __name__ == "__main__":
     optimizer = LDAOptimization(
         nlp_normalization_method="lemmatization",  # Method to choose: either stemmer or lemmatization
-        n_filter=250,  # Minimum frequency to retain a token in the dictionary. e.g if n_filter=0 all tokens will be kept
+        n_filter=0,  # Minimum frequency to retain a token in the dictionary. e.g if n_filter=0 all tokens will be kept
         n_trials=50,  # Number of trials for optimization
     )
     optimizer.run()
