@@ -4,7 +4,8 @@ from logging import Logger
 import optuna
 from tqdm import tqdm
 import nltk
-from gensim.models import CoherenceModel, ldamulticore
+from gensim.models import CoherenceModel
+from gensim.models.ldamulticore import LdaMulticore
 from gensim.corpora import Dictionary
 from data_cleaning import DataCleaning
 from utils.utils import logger
@@ -118,7 +119,7 @@ class LDAOptimization:
         eta = trial.suggest_float("eta", 0.01, 0.91, step=0.01)
         decay = trial.suggest_float("decay", 0.5, 1, step=0.1)
 
-        lda_model = ldamulticore.LdaMulticore(
+        lda_model = LdaMulticore(
             corpus=corpus,
             id2word=id2word,
             num_topics=num_topics,

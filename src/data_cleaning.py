@@ -117,6 +117,7 @@ class DataCleaning:
         df_final: DataFrame
             Cleaned DataFrame.
         """
+        self.logger.setLevel("INFO")
 
         df = self.load()
         df_cleaned_nan = self.clean_nan(df)

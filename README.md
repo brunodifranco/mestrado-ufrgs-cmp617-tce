@@ -2,10 +2,6 @@
 
 ## Falta
 
-Para o LDA:
-- Otimização Bayesiana
-
-
 Para o BertTopic:
 - Rodar em todo conjunto de dados
 - Fazer funcionar a questão do nr_topics e zeroshot_topic_list
@@ -32,3 +28,10 @@ Depois disso tudo, só precisamos escrever o artigo
 instalacao spacy
 
 python -m spacy download pt_core_news_md
+
+
+## IMPORTANTE MENCIONAR 
+
+"But by its very nature, LDA is a generative probabilistic method. Simplifying a little bit here, each time you use it, many Dirichlet distributions are generated, followed by inference steps"
+
+https://stackoverflow.com/questions/51956153/gensim-lda-coherence-values-not-reproducible-between-runs
