@@ -801,3 +801,7 @@ permanente
 proprios
 todas
 todos
+prestação
+especificações
+solicitação
+seleção

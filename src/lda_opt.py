@@ -3,6 +3,7 @@ from typing import Union, List, Dict
 from logging import Logger
 import optuna
 from tqdm import tqdm
+import spacy
 import nltk
 from gensim.models import CoherenceModel
 from gensim.models.ldamulticore import LdaMulticore
@@ -10,7 +11,6 @@ from gensim.corpora import Dictionary
 from data_cleaning import DataCleaning
 from utils.utils import logger
 from utils.nlp import preprocess, remove_stop_words, stemmer_pt, lemma_pt
-import spacy
 
 
 class LDAOptimization:
@@ -43,6 +43,15 @@ class LDAOptimization:
         self.logger = logger
 
     def nlp_preprocessing(self) -> List[str]:
+        """
+        Cleans data and performs NLP techniques.
+
+        Returns
+        -------
+        vec : List[str]
+            List of text data for model coherence calculation.
+        """
+
         cleaning_pipeline = DataCleaning()
         df = cleaning_pipeline.run()
 
@@ -158,10 +167,10 @@ class LDAOptimization:
 
         # Create corpus
         id2word = Dictionary(vec)
-        tokens_a_remover = [
+        tokens_to_remove = [
             token for token, freq in id2word.dfs.items() if freq < self.n_filter
         ]
-        id2word.filter_tokens(bad_ids=tokens_a_remover)
+        id2word.filter_tokens(bad_ids=tokens_to_remove)
         id2word.compactify()
         corpus = [id2word.doc2bow(text) for text in vec]
 
@@ -202,9 +211,8 @@ class LDAOptimization:
         self.logger.info("Results saved to JSON")
 
     def run(self):
-        """
-        Runs the optimizer
-        """
+        """Runs the optimizer"""
+
         self.logger.setLevel("INFO")
         vec = self.nlp_preprocessing()
 
@@ -219,8 +227,8 @@ class LDAOptimization:
 
 if __name__ == "__main__":
     optimizer = LDAOptimization(
-        nlp_normalization_method="lemmatization",  # Method to choose: either stemmer or lemmatization
-        n_filter=0,  # Minimum frequency to retain a token in the dictionary. e.g if n_filter=0 all tokens will be kept
+        nlp_normalization_method="stemmer",  # Method to choose: either stemmer or lemmatization
+        n_filter=1000,  # Minimum frequency to retain a token in the dictionary. e.g if n_filter=0 all tokens will be kept
         n_trials=50,  # Number of trials for optimization
     )
     optimizer.run()

@@ -1,14 +1,12 @@
-topic_model = BERTopic(
-    nr_topics=5,
-    zeroshot_topic_list=[
-        "vehicles",
-        "construction",
-        "health/hospital",
-        "education",
-        "food",
-    ],
-    min_topic_size=5,
-    language="brazilian portuguese",
-    low_memory=True,
+from transformers import pipeline
+import torch
+
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
+pipe = pipeline(
+    "zero-shot-classification",
+    model="MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7",
+    framework="pt",
+    device=device,
+    batch_size=64,
 )
-topics, _ = topic_model.fit_transform(docs)
