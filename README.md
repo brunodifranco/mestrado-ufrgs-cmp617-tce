@@ -42,3 +42,15 @@ python -m spacy download pt_core_news_md
 "But by its very nature, LDA is a generative probabilistic method. Simplifying a little bit here, each time you use it, many Dirichlet distributions are generated, followed by inference steps"
 
 https://stackoverflow.com/questions/51956153/gensim-lda-coherence-values-not-reproducible-between-runs
+
+## Pra ter acesso aos dados pre tratados:
+
+No linux:
+- Precisa ter o curl instalado `sudo apt install curl`
+- Executar o script `get_data_tce.py`
+
+Ou (em qualquer OS):
+
+Tem no [google drive](https://drive.google.com/file/d/1w9Y5qKA2sRa9PjwAedeRWDPmGmGnFdwc/view?usp=sharing)
+
+e colocar na pasta /data
