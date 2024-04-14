@@ -56,6 +56,7 @@ def preprocess(x: str) -> str:
     for c in special_chars:
         new_x = new_x.replace(c, " ")  # Removes special characters
     new_x = re.sub(r"[^\w\s]", " ", new_x)  # Removes punctuation
+    new_x = re.sub(r'\d+', '', new_x) # Remove numbers
     new_x = re.sub("http\S+", " ", new_x)  # Removes links
     new_x = re.sub("@\w+", " ", new_x)  # Removes @
     new_x = re.sub("#\S+", " ", new_x)  # Removes hashtags
