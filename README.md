@@ -1,3 +1,7 @@
+# DAR UMA OLHADA EM https://maartengr.github.io/BERTopic/getting_started/tips_and_tricks/tips_and_tricks.html#pre-compute-embeddings - Pre-compute embeddings¶
+
+
+
 # mestrado-ufrgs-cmp617-tce
 
 ## Falta
