@@ -51,8 +51,6 @@ class LDASingleModel:
         cleaning_pipeline = DataCleaning()
         df = cleaning_pipeline.run()
 
-        df = df.sample(25000)
-
         nlp_normalization_method = self.params_json["nlp_normalization_method"]
 
         self.logger.info("Running NLP treatment")

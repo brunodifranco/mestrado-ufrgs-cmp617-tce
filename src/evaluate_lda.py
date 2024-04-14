@@ -41,7 +41,7 @@ def get_files(model_path: str) -> Tuple[LdaMulticore, List[str], List, Dictionar
 
 
 def coherence_score(
-    lda_model: LdaMulticore, vec: List[str], id2word: Dictionary, coherence: str, topn: int
+    lda_model: LdaMulticore, vec: List[str], id2word: Dictionary, coherence: str
 ) -> float:
     """
     Calculates the desired coherence_score.
@@ -55,7 +55,7 @@ def coherence_score(
     id2word : Dictionary
         Gensim Dictionary.
     coherence : str
-        Desired coherence metrics. Options are {"c_v", "c_uci", "c_npmi"}
+        Desired coherence metrics. Options are {"c_v", "c_uci", "c_npmi", "u_mass"}
 
     Returns
     --------
@@ -64,7 +64,7 @@ def coherence_score(
     """
 
     coherence_model_lda = CoherenceModel(
-        model=lda_model, texts=vec, dictionary=id2word, coherence=coherence, topn=topn
+        model=lda_model, texts=vec, dictionary=id2word, coherence=coherence
     )
     coherence_lda = coherence_model_lda.get_coherence()
 

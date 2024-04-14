@@ -1,0 +1,1 @@
+{"filter": 500, "nlp_normalization_method": "stemmer", "best_score_u_mass": -2.5996645699193537, "best_score_uci": 1.0145267337523018, "params": {"num_topics": 7, "chunksize": 100, "passes": 6, "alpha": 0.9, "eta": 0.81, "decay": 0.7}}

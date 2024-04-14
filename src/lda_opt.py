@@ -102,7 +102,7 @@ class LDAOptimization:
     ) -> float:
         """
         Objective function for Bayesian Optimization to tune parameters for LDA (Latent Dirichlet Allocation) model,
-        returning the Coherence score c-v (Cosine Similarity).
+        returning the Coherence score c_v.
 
         Parameters
         ----------
@@ -117,8 +117,8 @@ class LDAOptimization:
 
         Returns
         -------
-        float
-            Coherence score c-v (Cosine Similarity) of the LDA model.
+        coherence_cv: float
+            Coherence score c_v of the LDA model.
         """
 
         num_topics = trial.suggest_int("num_topics", 5, 7, step=1)
@@ -142,12 +142,12 @@ class LDAOptimization:
         )
 
         # Coherence Score
-        coherence_model_lda = CoherenceModel(
-            model=lda_model, texts=vec, dictionary=id2word, coherence="c_v"
+        coherence_model_cv = CoherenceModel(
+            model=lda_model, texts=vec, dictionary=id2word, coherence="c_v", topn=5
         )
-        coherence_lda = coherence_model_lda.get_coherence()
+        coherence_cv = coherence_model_cv.get_coherence()
 
-        return coherence_lda
+        return coherence_cv
 
     def get_opt(
         self, vec: List[str]
@@ -180,7 +180,7 @@ class LDAOptimization:
             lambda trial: self.bayesian_opt_objective(trial, id2word, corpus, vec),
             n_trials=self.n_trials,
         )
-        trial = study.best_trial
+        trial = study.best_trial # Get best trial
 
         # Store results
         results = {}
@@ -204,7 +204,7 @@ class LDAOptimization:
             Dict with results.
         """
 
-        output_path = f"src/opt_outputs/results_{self.nlp_normalization_method}_with_filter_{self.n_filter}.json"
+        output_path = f"src/opt_outputs_3/results_{self.nlp_normalization_method}_with_filter_{self.n_filter}.json"
         with open(output_path, "w") as json_file:
             json.dump(results, json_file)
 

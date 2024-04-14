@@ -4,8 +4,11 @@ from pathlib import Path
 import numpy as np
 from unidecode import unidecode
 from spacy.language import Language
+import nltk
 from nltk.stem import RSLPStemmer
 from pandas.core.series import Series
+
+nltk.download("rslp")
 
 
 def remove_stop_words(
@@ -56,7 +59,7 @@ def preprocess(x: str) -> str:
     for c in special_chars:
         new_x = new_x.replace(c, " ")  # Removes special characters
     new_x = re.sub(r"[^\w\s]", " ", new_x)  # Removes punctuation
-    new_x = re.sub(r'\d+', '', new_x) # Remove numbers
+    new_x = re.sub(r"\d+", "", new_x)  # Remove numbers
     new_x = re.sub("http\S+", " ", new_x)  # Removes links
     new_x = re.sub("@\w+", " ", new_x)  # Removes @
     new_x = re.sub("#\S+", " ", new_x)  # Removes hashtags
@@ -84,6 +87,7 @@ def stemmer_pt(text: Union[List[str], Series, np.array]) -> List[str]:
     List[str]
         List of words with stemmer applied.
     """
+
     stemmer = RSLPStemmer()
     return [stemmer.stem(word) for word in text]
 

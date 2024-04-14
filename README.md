@@ -72,3 +72,18 @@ pip install \
     
 
 Desinstalar no final o cuml (pq ocupa 7gb)
+
+
+## Obs
+
+Devemos pegar o modelo e rodar x vezes, pra termos uma média +- std do modelo, justamente pela coherence ser um pouco variável
+
+https://stackoverflow.com/questions/51956153/gensim-lda-coherence-values-not-reproducible-between-runs
+
+
+## POR QUE FOI UTILIZADO CV pra otimizar no optuna?
+
+"Our analyses demonstrate that the metrics CV and CP are more sensitive to noise. That confirms their applicability in scenarios where the user wants to highlight topics with some unrelated words", conforme o artigo https://sol.sbc.org.br/journals/index.php/jidm/article/download/2181/2049/11581
+
+Por isso, será o escolhido.
+
