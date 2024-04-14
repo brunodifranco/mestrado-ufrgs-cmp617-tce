@@ -58,3 +58,17 @@ Ou (em qualquer OS):
 Tem no [google drive](https://drive.google.com/file/d/1w9Y5qKA2sRa9PjwAedeRWDPmGmGnFdwc/view?usp=sharing)
 
 e colocar na pasta /data
+
+
+## NA INSTALACAO DO CUML
+
+So escrever assim "checkout how to install for your system in https://docs.rapids.ai/install#rapids-release-selector"
+
+no meu caso foi 
+
+pip install \
+    --extra-index-url=https://pypi.nvidia.com \
+    cudf-cu11==24.4.* cuml-cu11==24.4.*
+    
+
+Desinstalar no final o cuml (pq ocupa 7gb)

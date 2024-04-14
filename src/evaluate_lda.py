@@ -40,11 +40,11 @@ def get_files(model_path: str) -> Tuple[LdaMulticore, List[str], List, Dictionar
     return lda_model, vec, corpus, id2word
 
 
-def cosine_similarity(
-    lda_model: LdaMulticore, vec: List[str], id2word: Dictionary
+def coherence_score(
+    lda_model: LdaMulticore, vec: List[str], id2word: Dictionary, coherence: str, topn: int
 ) -> float:
     """
-    Calculates cosine similarity.
+    Calculates the desired coherence_score.
 
     Parameters
     ----------
@@ -54,19 +54,21 @@ def cosine_similarity(
         List of text data for model optimization.
     id2word : Dictionary
         Gensim Dictionary.
+    coherence : str
+        Desired coherence metrics. Options are {"c_v", "c_uci", "c_npmi"}
 
     Returns
     --------
     coherence_lda: float
-        Coherence Score, which is the cosine similarity when using coherence="c_v".
+        Coherence Score.
     """
 
     coherence_model_lda = CoherenceModel(
-        model=lda_model, texts=vec, dictionary=id2word, coherence="c_v"
+        model=lda_model, texts=vec, dictionary=id2word, coherence=coherence, topn=topn
     )
     coherence_lda = coherence_model_lda.get_coherence()
 
-    logger.info(f"Cosine similarity calculated")
+    logger.info(f"Coherence score {coherence} calculated")
 
     return coherence_lda
 
