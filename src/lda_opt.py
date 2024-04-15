@@ -1,3 +1,4 @@
+import os
 import json
 from typing import Union, List, Dict
 from logging import Logger
@@ -21,8 +22,6 @@ class LDAOptimization:
     ----------
     nlp_normalization_method : str
         NLP normalization method to choose: either 'stemmer' or 'lemmatization'
-    n_filter : int
-        Minimum frequency to retain a token in the dictionary.
     n_trials : int
         Number of trials in optimization.
     logger : Logger, defaults to logger
@@ -32,13 +31,11 @@ class LDAOptimization:
     def __init__(
         self,
         nlp_normalization_method: str,
-        n_filter: int,
         n_trials: int,
         logger: Logger = logger,
     ):
 
         self.nlp_normalization_method = nlp_normalization_method
-        self.n_filter = n_filter
         self.n_trials = n_trials
         self.logger = logger
 
@@ -97,9 +94,7 @@ class LDAOptimization:
         vec = df["DS_OBJETO_NLP"].values.tolist()
         return vec
 
-    def bayesian_opt_objective(
-        self, trial: optuna.Trial, id2word: Dictionary, corpus: List, vec: List[str]
-    ) -> float:
+    def bayesian_opt_objective(self, trial: optuna.Trial, vec: List[str]) -> float:
         """
         Objective function for Bayesian Optimization to tune parameters for LDA (Latent Dirichlet Allocation) model,
         returning the Coherence score c_v.
@@ -121,12 +116,22 @@ class LDAOptimization:
             Coherence score c_v of the LDA model.
         """
 
-        num_topics = trial.suggest_int("num_topics", 5, 7, step=1)
+        n_filter = trial.suggest_int("n_filter", 0, 500, step=50)
+        num_topics = trial.suggest_int("num_topics", 5, 10, step=1)
         chunksize = trial.suggest_int("chunksize", 80, 180, step=10)
         passes = trial.suggest_int("passes", 5, 20, step=1)
         alpha = trial.suggest_float("alpha", 0.01, 1, step=0.01)
         eta = trial.suggest_float("eta", 0.01, 0.91, step=0.01)
         decay = trial.suggest_float("decay", 0.5, 1, step=0.1)
+
+        # Create corpus
+        id2word = Dictionary(vec)
+        tokens_to_remove = [
+            token for token, freq in id2word.dfs.items() if freq < n_filter
+        ]
+        id2word.filter_tokens(bad_ids=tokens_to_remove)
+        id2word.compactify()
+        corpus = [id2word.doc2bow(text) for text in vec]
 
         lda_model = LdaMulticore(
             corpus=corpus,
@@ -143,7 +148,7 @@ class LDAOptimization:
 
         # Coherence Score
         coherence_model_cv = CoherenceModel(
-            model=lda_model, texts=vec, dictionary=id2word, coherence="c_v", topn=5
+            model=lda_model, texts=vec, dictionary=id2word, coherence="c_v", topn=7
         )
         coherence_cv = coherence_model_cv.get_coherence()
 
@@ -165,26 +170,16 @@ class LDAOptimization:
         Dict[str, Union[int, str, float, Dict[str, Union[int, float]]]]
         """
 
-        # Create corpus
-        id2word = Dictionary(vec)
-        tokens_to_remove = [
-            token for token, freq in id2word.dfs.items() if freq < self.n_filter
-        ]
-        id2word.filter_tokens(bad_ids=tokens_to_remove)
-        id2word.compactify()
-        corpus = [id2word.doc2bow(text) for text in vec]
-
         # Optimizer
         study = optuna.create_study(direction="maximize")
         study.optimize(
-            lambda trial: self.bayesian_opt_objective(trial, id2word, corpus, vec),
+            lambda trial: self.bayesian_opt_objective(trial, vec),
             n_trials=self.n_trials,
         )
-        trial = study.best_trial # Get best trial
+        trial = study.best_trial  # Get best trial
 
         # Store results
         results = {}
-        results["filter"] = self.n_filter
         results["nlp_normalization_method"] = self.nlp_normalization_method
         results["best_score"] = trial.value
         results["params"] = trial.params
@@ -204,7 +199,11 @@ class LDAOptimization:
             Dict with results.
         """
 
-        output_path = f"src/opt_outputs_3/results_{self.nlp_normalization_method}_with_filter_{self.n_filter}.json"
+        output_dir = "src/lda_opt_outputs"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        output_path = f"{output_dir}/results_{self.nlp_normalization_method}.json"
         with open(output_path, "w") as json_file:
             json.dump(results, json_file)
 
@@ -228,7 +227,6 @@ class LDAOptimization:
 if __name__ == "__main__":
     optimizer = LDAOptimization(
         nlp_normalization_method="stemmer",  # Method to choose: either stemmer or lemmatization
-        n_filter=0,  # Minimum frequency to retain a token in the dictionary. e.g if n_filter=0 all tokens will be kept
-        n_trials=20,  # Number of trials for optimization
+        n_trials=35,  # Number of trials for optimization
     )
     optimizer.run()

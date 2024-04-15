@@ -135,7 +135,7 @@ class BERTopicOptimization:
 
         topic_model = BERTopic(
             nr_topics="auto",
-            top_n_words=5,  # Fixed, so we can compare to LDA model
+            top_n_words=7,  # Fixed, so we can compare to LDA model
             embedding_model=self.embedding_model,
             language="brazilian portuguese",
             umap_model=umap_model,
