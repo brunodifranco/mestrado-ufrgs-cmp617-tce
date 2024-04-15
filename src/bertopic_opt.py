@@ -27,6 +27,8 @@ class BERTopicOptimization:
     ----------
     embedding_model : str
         Sentence Transformer model name or path.
+    topn : int
+        Number of top words to be extracted from each topic.  
     n_trials : int
         Number of trials in optimization.
     logger : Logger, defaults to logger
@@ -36,12 +38,14 @@ class BERTopicOptimization:
     def __init__(
         self,
         embedding_model: str,
+        topn: int,
         n_trials: int,
         stop_words_path: Path,
         logger: Logger = logger,
     ):
 
         self.embedding_model = embedding_model
+        self.topn = topn
         self.n_trials = n_trials
         self.stop_words_path = stop_words_path
         self.logger = logger
@@ -125,6 +129,8 @@ class BERTopicOptimization:
             n_components=umap_n_components,
             n_neighbors=umap_n_neighbors,
             min_dist=umap_min_dist,
+            metric="cosine", # cosine and random state fixed to make results reproducible
+            random_state=42
         )
         hdbscan_model = HDBSCAN(
             min_cluster_size=min_topic_size,
@@ -135,7 +141,7 @@ class BERTopicOptimization:
 
         topic_model = BERTopic(
             nr_topics="auto",
-            top_n_words=7,  # Fixed, so we can compare to LDA model
+            top_n_words=self.topn, 
             embedding_model=self.embedding_model,
             language="brazilian portuguese",
             umap_model=umap_model,
@@ -203,6 +209,7 @@ class BERTopicOptimization:
         # Store results
         results = {}
         results["embedding_model"] = self.embedding_model
+        results["topn"] = self.topn
         results["best_score"] = trial.value
         results["params"] = trial.params
 
@@ -223,9 +230,9 @@ class BERTopicOptimization:
         
         output_dir = "src/bertopic_opt_outputs"
         if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            os.makedirs(output_dir + f"/{self.embedding_model}")
 
-        output_path = f"{output_dir}/results_{self.embedding_model}.json"
+        output_path = f"{output_dir}/{self.embedding_model}/results_{self.topn}_topn_.json"
         with open(output_path, "w") as json_file:
             json.dump(results, json_file)
 
@@ -249,7 +256,8 @@ class BERTopicOptimization:
 if __name__ == "__main__":
     optimizer = BERTopicOptimization(
         embedding_model="paraphrase-multilingual-MiniLM-L12-v2",  # Sentence Transformer model name or path
-        n_trials=20,  # Number of trials for optimization
+        topn=5,
+        n_trials=30,  # Number of trials for optimization
         stop_words_path="src/utils/stop_words.txt",
     )
     optimizer.run()

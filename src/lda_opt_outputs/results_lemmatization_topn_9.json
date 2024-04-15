@@ -1,0 +1,15 @@
+{
+    "nlp_normalization_method": "lemmatization",
+    "topn": 9,
+    "best_score": 0.6531454658573888,
+    "params": {
+      "n_filter": 100,
+      "num_topics": 9,
+      "chunksize": 150,
+      "passes": 7,
+      "alpha": 0.75,
+      "eta": 0.5800000000000001,
+      "decay": 0.5
+    }
+  }
+  

@@ -231,8 +231,8 @@ class LDAOptimization:
 
 if __name__ == "__main__":
     optimizer = LDAOptimization(
-        nlp_normalization_method="stemmer",  # Method to choose: either stemmer or lemmatization
-        topn=5, # Number of top words to be extracted from each topic.
+        nlp_normalization_method="lemmatization",  # Method to choose: either stemmer or lemmatization
+        topn=10, # Number of top words to be extracted from each topic.
         n_trials=30,  # Number of trials for optimization
     )
     optimizer.run()
