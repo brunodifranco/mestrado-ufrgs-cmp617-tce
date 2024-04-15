@@ -24,6 +24,8 @@ class LDAOptimization:
         NLP normalization method to choose: either 'stemmer' or 'lemmatization'
     n_trials : int
         Number of trials in optimization.
+    topn : int
+        Number of top words to be extracted from each topic. 
     logger : Logger, defaults to logger
         logger.
     """
@@ -32,11 +34,13 @@ class LDAOptimization:
         self,
         nlp_normalization_method: str,
         n_trials: int,
+        topn: int,
         logger: Logger = logger,
     ):
 
         self.nlp_normalization_method = nlp_normalization_method
         self.n_trials = n_trials
+        self.topn = topn
         self.logger = logger
 
     def nlp_preprocessing(self) -> List[str]:
@@ -148,7 +152,7 @@ class LDAOptimization:
 
         # Coherence Score
         coherence_model_cv = CoherenceModel(
-            model=lda_model, texts=vec, dictionary=id2word, coherence="c_v", topn=7
+            model=lda_model, texts=vec, dictionary=id2word, coherence="c_v", topn=self.topn
         )
         coherence_cv = coherence_model_cv.get_coherence()
 
@@ -181,6 +185,7 @@ class LDAOptimization:
         # Store results
         results = {}
         results["nlp_normalization_method"] = self.nlp_normalization_method
+        results["topn"] = self.topn
         results["best_score"] = trial.value
         results["params"] = trial.params
 
@@ -203,7 +208,7 @@ class LDAOptimization:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        output_path = f"{output_dir}/results_{self.nlp_normalization_method}.json"
+        output_path = f"{output_dir}/results_{self.nlp_normalization_method}_topn_{self.topn}.json"
         with open(output_path, "w") as json_file:
             json.dump(results, json_file)
 
@@ -227,6 +232,7 @@ class LDAOptimization:
 if __name__ == "__main__":
     optimizer = LDAOptimization(
         nlp_normalization_method="stemmer",  # Method to choose: either stemmer or lemmatization
-        n_trials=35,  # Number of trials for optimization
+        topn=5, # Number of top words to be extracted from each topic.
+        n_trials=30,  # Number of trials for optimization
     )
     optimizer.run()

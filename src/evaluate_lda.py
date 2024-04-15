@@ -41,7 +41,7 @@ def get_files(model_path: str) -> Tuple[LdaMulticore, List[str], List, Dictionar
 
 
 def coherence_score(
-    lda_model: LdaMulticore, vec: List[str], id2word: Dictionary, coherence: str
+    lda_model: LdaMulticore, vec: List[str], id2word: Dictionary, coherence: str, topn: int
 ) -> float:
     """
     Calculates the desired coherence_score.
@@ -56,6 +56,8 @@ def coherence_score(
         Gensim Dictionary.
     coherence : str
         Desired coherence metrics. Options are {"c_v", "c_uci", "c_npmi", "u_mass"}
+    topn : int
+        Number of top words to be extracted from each topic. 
 
     Returns
     --------
@@ -64,7 +66,7 @@ def coherence_score(
     """
 
     coherence_model_lda = CoherenceModel(
-        model=lda_model, texts=vec, dictionary=id2word, coherence=coherence
+        model=lda_model, texts=vec, dictionary=id2word, coherence=coherence, topn=topn
     )
     coherence_lda = coherence_model_lda.get_coherence()
 
@@ -74,7 +76,7 @@ def coherence_score(
 
 
 def word_cloud(
-    stopwords: List[str], model: LdaMulticore, n_topics: int, figsize: Tuple = (30, 30)
+    stopwords: List[str], model: LdaMulticore, n_topics: int, max_words: int, figsize: Tuple = (30, 30)
 ):
     """
     Displays word cloud.
@@ -87,6 +89,8 @@ def word_cloud(
         LDA (Latent Dirichlet Allocation) saved model.
     n_topics: int
         Number of topics
+    max_words: int
+        Top n words that represent the topic
     figsize : Tuple, defaults to (30, 30)
         Figure size.
     """
@@ -96,7 +100,7 @@ def word_cloud(
         background_color="white",
         width=2500,
         height=1800,
-        max_words=7,
+        max_words=max_words,
         colormap="tab10",
         prefer_horizontal=1.0,
     )

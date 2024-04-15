@@ -1,0 +1,1 @@
+{"nlp_normalization_method": "stemmer", "topn": 9, "best_score": 0.6069094636314014, "params": {"n_filter": 250, "num_topics": 8, "chunksize": 130, "passes": 18, "alpha": 0.99, "eta": 0.76, "decay": 0.6}}
