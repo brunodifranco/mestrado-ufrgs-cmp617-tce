@@ -1,0 +1,11 @@
+{
+    "best_score": 0.92641536708201,
+    "params": {
+      "min_topic_size": 500,
+      "umap_n_components": 5,
+      "umap_n_neighbors": 12,
+      "umap_min_dist": 0.7000000000000001,
+      "hdbscan_min_samples": 11
+    }
+  }
+  

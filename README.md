@@ -31,8 +31,7 @@ Depois disso tudo, só precisamos escrever o artigo
 
 ## Todo
 
-- Separar cada etapa do processo em vários notebooks
-- No final, com o código já pronto, ter scripts pra cada um poder reproduzir, como se fosse uma pipeline mesmo (ter um script main, q puxa varios - o main seria oq executa a pipeline).  E ter no readme oq cada script .py esta fazendo
+- adicionar os results com leammatizer no outputs 3
 
 ## obs
 
