@@ -1,13 +1,1 @@
-{
-    "embedding_model": "paraphrase-multilingual-MiniLM-L12-v2",
-    "topn": 5,
-    "best_score": 0.8540823124932239,
-    "params": {
-      "min_topic_size": 650,
-      "umap_n_components": 5,
-      "umap_n_neighbors": 9,
-      "umap_min_dist": 0.8,
-      "hdbscan_min_samples": 8
-    }
-  }
-  
+{"embedding_model": "paraphrase-multilingual-MiniLM-L12-v2", "topn": 5, "best_score": 0.8540823124932239, "params": {"min_topic_size": 450, "umap_n_components": 3, "umap_n_neighbors": 15, "umap_min_dist": 0.125, "hdbscan_min_samples": 14}}

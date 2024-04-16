@@ -121,7 +121,7 @@ class BERTopicOptimization:
         min_topic_size = trial.suggest_int("min_topic_size", 350, 800, step=50)
         umap_n_components = trial.suggest_int("umap_n_components", 2, 6, step=1)
         umap_n_neighbors = trial.suggest_int("umap_n_neighbors", 5, 20, step=1)
-        umap_min_dist = trial.suggest_float("umap_min_dist", 0.0, 1.0, step=0.1)
+        umap_min_dist = trial.suggest_float("umap_min_dist", 0.025, 0.3, step=0.025)
         hdbscan_min_samples = trial.suggest_int("hdbscan_min_samples", 5, 20, step=1)
 
         # Models
@@ -232,7 +232,7 @@ class BERTopicOptimization:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir + f"/{self.embedding_model}")
 
-        output_path = f"{output_dir}/{self.embedding_model}/results_{self.topn}_topn_.json"
+        output_path = f"{output_dir}/{self.embedding_model}/results_topn_{self.topn}_.json"
         with open(output_path, "w") as json_file:
             json.dump(results, json_file)
 
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     optimizer = BERTopicOptimization(
         embedding_model="paraphrase-multilingual-MiniLM-L12-v2",  # Sentence Transformer model name or path
         topn=5,
-        n_trials=30,  # Number of trials for optimization
+        n_trials=20,  # Number of trials for optimization
         stop_words_path="src/utils/stop_words.txt",
     )
     optimizer.run()

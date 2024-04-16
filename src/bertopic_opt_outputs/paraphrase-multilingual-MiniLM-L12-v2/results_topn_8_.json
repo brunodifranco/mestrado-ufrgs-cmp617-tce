@@ -1,0 +1,1 @@
+{"embedding_model": "paraphrase-multilingual-MiniLM-L12-v2", "topn": 8, "best_score": 0.8705787071164299, "params": {"min_topic_size": 400, "umap_n_components": 3, "umap_n_neighbors": 15, "umap_min_dist": 0.025, "hdbscan_min_samples": 15}}
