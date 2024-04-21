@@ -1,0 +1,1 @@
+{"embedding_model": "paraphrase-multilingual-MiniLM-L12-v2", "topn": 7, "best_score": 0.6482719870222485, "params": {"k_means_clusters": 170, "k_means_n_init": 17, "k_means_max_iter": 280, "umap_n_components": 10, "umap_n_neighbors": 10, "umap_min_dist": 0.05}}

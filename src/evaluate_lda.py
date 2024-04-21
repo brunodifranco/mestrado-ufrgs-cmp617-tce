@@ -55,7 +55,7 @@ def coherence_score(
     id2word : Dictionary
         Gensim Dictionary.
     coherence : str
-        Desired coherence metrics. Options are {"c_v", "c_uci", "c_npmi", "u_mass"}
+        Desired coherence metrics. Options are {"c_v", "c_npmi"}
     topn : int
         Number of top words to be extracted from each topic. 
 

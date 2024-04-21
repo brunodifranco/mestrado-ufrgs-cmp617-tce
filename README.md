@@ -16,6 +16,10 @@ instalacao spacy
 
 python -m spacy download pt_core_news_md
 
+## Sobre os dados
+
+foram separados 2021 a 2024, e somente aquelas licitacoes aprovadas
+
 
 ## IMPORTANTE MENCIONAR 
 

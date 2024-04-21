@@ -1,1 +1,11 @@
-{"embedding_model": "paraphrase-multilingual-MiniLM-L12-v2", "topn": 7, "best_score": 0.9172348141107141, "params": {"min_topic_size": 600, "umap_n_components": 2, "umap_n_neighbors": 10, "umap_min_dist": 0.225, "hdbscan_min_samples": 10}}
+{
+"embedding_model": "paraphrase-multilingual-MiniLM-L12-v2", 
+"topn": 7, 
+"params": {
+    "min_topic_size": 25,
+    "umap_n_components": 4,
+    "umap_n_neighbors": 10,
+    "umap_min_dist": 0.75,
+    "hdbscan_min_samples": 12
+    }
+}

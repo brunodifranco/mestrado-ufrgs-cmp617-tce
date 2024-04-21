@@ -11,13 +11,13 @@ ipywidgets==8.1.2
 spacy==3.7.4
 transformers==4.39.3
 datasets
-# sentence-transformers
+sentence-transformers
 optuna==3.6.1
-# bertopic==0.16.0
+bertopic==0.16.0
 # umap-learn==0.5.5
 # evaluate==0.4.0
-top2vec
-top2vec[sentence_encoders]
+# top2vec
+# top2vec[sentence_encoders]
 nbformat==5.10.4
 # torch
 Pillow==10.3.0
