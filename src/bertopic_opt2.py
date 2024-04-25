@@ -41,7 +41,7 @@ class BERTopicOptimization:
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
         self.best_cv_score = float("-inf")
-        self.best_model_path = Path("models/bertopic/best_model/model.pkl")
+        self.best_model_path = Path(f"models/bertopic/{embedding_model}/best_model/model.pkl")
 
     def bayesian_opt_objective(
         self,
@@ -156,7 +156,7 @@ class BERTopicOptimization:
         self.logger.info(f"New best model saved with c_v score: {self.best_cv_score}")
 
     def run(self):
-        embeddings, vectorizer_model, docs = load_inputs("models/bertopic/inputs")
+        embeddings, vectorizer_model, docs = load_inputs("models/bertopic/inputs/LaBSE")
         self.optimize(docs, embeddings, vectorizer_model)
 
     def optimize(self, docs, embeddings, vectorizer_model):
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     optimizer = BERTopicOptimization(
         embedding_model="paraphrase-multilingual-MiniLM-L12-v2",
         topn=7,
-        n_trials=80,
+        n_trials=20,
         stop_words_path=Path("src/utils/stop_words_bertopic.txt"),
     )
     optimizer.run()
