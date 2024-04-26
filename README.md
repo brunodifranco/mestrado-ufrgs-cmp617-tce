@@ -51,8 +51,7 @@ pip install \
     cudf-cu11==24.4.* cuml-cu11==24.4.*
     
 
-Desinstalar no final o cuml (pq ocupa 7gb)
-
+outra coisa, se tiver problema com bulding `ERROR: Could not build wheels for hdbscan, which is required to install pyproject.toml-based projects` precisa rodar `sudo apt-get install python3-dev`
 
 ## Obs
 
