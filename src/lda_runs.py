@@ -1,3 +1,4 @@
+import nltk
 import os
 import json
 import pickle
@@ -9,6 +10,8 @@ from gensim.corpora import Dictionary
 from lda_fit import LDASingleModel
 from utils.utils import logger, get_json
 from evaluate_lda import coherence_score
+
+nltk.download("punkt")
 
 
 class LDARuns:
@@ -70,6 +73,7 @@ class LDARuns:
             20  # Fixed at 20 runs, to keep the same amount of iterations for all models
         )
         topn = params_json["topn"]
+        nlp_normalization_method = params_json["nlp_normalization_method"]
         metrics = []
 
         best_cv_score = float("-inf")  # Initially set to -inf
@@ -116,7 +120,7 @@ class LDARuns:
         results = {"metrics": metrics, "mean_metrics": mean_metrics}
 
         # Saves the best model
-        path = f"models/lda/best_model_topn_{topn}/"
+        path = f"models/lda/{nlp_normalization_method}/best_model_topn_{topn}/"
         if not os.path.exists(path):
             os.makedirs(path + "pkl")
             os.makedirs(path + "metrics")
@@ -146,6 +150,6 @@ class LDARuns:
 
 if __name__ == "__main__":
     lda = LDARuns(
-        params_json="src/lda_opt_outputs/results_stemmer_topn_10.json",
+        params_json="src/lda_opt_outputs/results_lemmatization_topn_10.json",
     )
     lda.run()

@@ -113,7 +113,7 @@ class BERTopicEmbeddings:
             CountVectorizer model.
         """
 
-        path = f"models/bertopic/inputs/{self.embedding_model}/"
+        path = f"models/bertopic/inputs/"
         if not os.path.exists(path):
             os.makedirs(path)
 
