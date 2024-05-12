@@ -2,6 +2,7 @@ import json
 from typing import Dict
 from pathlib import Path
 import logging
+import numpy as np
 
 logging.basicConfig(
     level=logging.WARNING,
@@ -29,3 +30,23 @@ def get_json(params_path: Path) -> Dict:
     with open(params_path, "r") as json_file:
         params_json = json.load(json_file)
         return params_json
+
+def pct_format(pct: float, all_vals: int) -> str:
+    """
+    Calculates percentage and formats as string
+
+    Parameters
+    ----------
+    pct: float
+        Float percentage.
+    all_vals: int
+        All values
+
+    Returns
+    -------
+    string
+        Formatted percentage.
+    """
+
+    absolute = int(pct/100.*np.sum(all_vals))
+    return "{:.1f}%\n{:d} Documents".format(pct, absolute)
