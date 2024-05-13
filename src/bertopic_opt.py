@@ -367,7 +367,7 @@ if __name__ == "__main__":
             embedding_model="paraphrase-multilingual-MiniLM-L12-v2",
             cluster_model="hdbscan",
             topn=n,
-            n_trials=40,
+            n_trials=30,
             stop_words_path=Path("src/utils/stop_words_bertopic.txt"),
         )
         optimizer.run()

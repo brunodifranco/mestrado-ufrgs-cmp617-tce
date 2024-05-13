@@ -4,13 +4,14 @@ from typing import List, Tuple, Union
 from torch import Tensor
 import numpy as np
 from bertopic import BERTopic
+from pathlib import Path
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from cuml.cluster import HDBSCAN
 from gensim.corpora import Dictionary
 from gensim.models import CoherenceModel
 from sklearn.feature_extraction.text import CountVectorizer
-from utils.utils import logger
+from utils.utils import logger, pct_format
 
 
 def load_inputs(
@@ -45,7 +46,7 @@ def load_inputs(
 
 
 def load_model_outputs(
-    model_path: Path,
+    model_path: Path, load_model_only: bool = False
 ) -> Tuple[BERTopic, List[str], np.ndarray]:
     """
     Loads the BERTopic model.
@@ -54,6 +55,8 @@ def load_model_outputs(
     ----------
     model_path : Path
         Model path.
+    load_model_only : bool, defaults to False.
+        Whether or not to load only the model.
 
     Returns
     -------
@@ -61,16 +64,25 @@ def load_model_outputs(
         BerTopic model, topics and probabilities
     """
 
-    with open(model_path + "/model.pkl", "rb") as file:
-        topic_model = pickle.load(file)
+    if not load_model_only:
 
-    with open(model_path + "/topics.pkl", "rb") as file:
-        topics = pickle.load(file)
+        with open(model_path + "/model.pkl", "rb") as file:
+            topic_model = pickle.load(file)
 
-    with open(model_path + "/probs.pkl", "rb") as file:
-        probs = pickle.load(file)
+        with open(model_path + "/topics.pkl", "rb") as file:
+            topics = pickle.load(file)
 
-    return topic_model, topics, probs
+        with open(model_path + "/probs.pkl", "rb") as file:
+            probs = pickle.load(file)
+
+        return topic_model, topics, probs
+
+    else:
+
+        with open(model_path + "/model.pkl", "rb") as file:
+            topic_model = pickle.load(file)
+
+        return topic_model
 
 
 def coherence_score(
@@ -134,7 +146,7 @@ def coherence_score(
     return coherence_score
 
 
-def word_cloud_bertopic(topic_model: BERTopic, save_path: Path = None):
+def word_cloud_bertopic(topic_model: BERTopic, save_path: Path = None, n_rows: int = 4):
     """
     Plots word clouds for BERTopic.
 
@@ -150,7 +162,6 @@ def word_cloud_bertopic(topic_model: BERTopic, save_path: Path = None):
     topics = topic_model.get_topics()
     n_topics = len(topics)
 
-    n_rows = 3
     n_cols = (n_topics + n_rows - 1) // n_rows
 
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(20, 9))
@@ -241,3 +252,66 @@ def get_bertopic_params(topic_model: BERTopic) -> dict:
             "n_init": n_init,
             "max_iter": max_iter,
         }
+
+
+def plot_lda_topic_dist(
+    topic_model: BERTopic,
+    save_path: Path = None,
+    fontsize: int = 8,
+    figsize: Tuple[int, int] = (18, 10),
+    threshold: int = 1200,
+):
+    """
+    Plots pie chart for LDA topic model distribution using data from a DataFrame and improves the legend positioning.
+
+    Parameters
+    ----------
+    topic_model: BERTopic
+        An instance of BERTopic.
+    save_path: Path, optional
+        Path to save the image file, if None the image is not saved.
+    fontsize: int, optional
+        Font size for the text in the plot.
+    figsize: Tuple[int, int], optional
+        Dimensions of the figure (width, height).
+    threshold: int, optional
+        Document count threshold for combining topics into "Other Topics".
+    """
+    df_topic_model = topic_model.get_topic_freq()
+    df_topic_model = df_topic_model[df_topic_model["Topic"] != -1]
+
+    small_topics = df_topic_model[df_topic_model["Count"] < threshold]
+    other_topic_sum = small_topics["Count"].sum()
+    small_topic_names = ", ".join(f"Topic {i}" for i in small_topics["Topic"])
+
+    df_topic_model = df_topic_model[df_topic_model["Count"] >= threshold]
+
+    if other_topic_sum > 0:
+        other_topics_df = pd.DataFrame(
+            {"Topic": [small_topic_names], "Count": [other_topic_sum]}
+        )
+        df_topic_model = pd.concat([df_topic_model, other_topics_df])
+
+    labels = [
+        f"Topic {i}" if isinstance(i, int) else i for i in df_topic_model["Topic"]
+    ]
+    sizes = df_topic_model["Count"].values
+    explode = [0.05] * len(labels)
+
+    fig, ax = plt.subplots(figsize=figsize)
+    wedges, texts, autotexts = ax.pie(
+        sizes,
+        autopct=lambda pct: pct_format(pct, sizes),
+        explode=explode,
+        labels=labels,
+        shadow=True,
+        startangle=90,
+        textprops=dict(color="black"),
+    )
+
+    plt.setp(autotexts, fontsize=fontsize, weight="bold")
+
+    if save_path:
+        plt.savefig(save_path)
+
+    plt.show()
