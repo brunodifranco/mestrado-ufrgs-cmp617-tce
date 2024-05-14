@@ -142,7 +142,9 @@ class LDASingleModel:
         """
 
         model_params = self.params_json["params"]
-        model_params.pop("n_filter", None) # Removing n_filter, as it isn't a LDA parameter
+        model_params.pop(
+            "n_filter", None
+        )  # Removing n_filter, as it isn't a LDA parameter
 
         model_params["corpus"] = corpus
         model_params["id2word"] = id2word

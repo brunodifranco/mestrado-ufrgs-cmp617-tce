@@ -1,5 +1,7 @@
+import os
+import json
 import pickle
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from pathlib import Path
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -8,6 +10,41 @@ from gensim.models.ldamulticore import LdaMulticore
 from gensim.models import CoherenceModel
 from gensim.corpora import Dictionary
 from utils.utils import logger, pct_format
+
+
+def read_json_metrics(base_path: Path, model_type: str) -> List[Dict]:
+    """
+    Reads json metrics in a List[Dict].
+
+    Parameters
+    ----------
+    base_path: Path
+        LDA (Latent Dirichlet Allocation) fit model.
+    model_type: str
+        Model type. Either "lemmatization" or "stemmer".
+
+    Returns
+    --------
+    metrics_list : List[Dict]
+        Metrics list.
+    """
+
+    metrics_list = []
+    for top_n in range(5, 11):
+        file_path = os.path.join(
+            base_path,
+            model_type,
+            f"best_model_topn_{top_n}",
+            "metrics",
+            "lda_metrics.json",
+        )
+        if os.path.exists(file_path):
+            with open(file_path, "r") as file:
+                data = json.load(file)
+                data["mean_metrics"]["top_n"] = top_n
+                metrics_list.append(data["mean_metrics"])
+
+    return metrics_list
 
 
 def get_files(model_path: str) -> Tuple[LdaMulticore, List[str], List, Dictionary]:

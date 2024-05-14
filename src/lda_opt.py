@@ -25,7 +25,7 @@ class LDAOptimization:
     n_trials : int
         Number of trials in optimization.
     topn : int
-        Number of top words to be extracted from each topic. 
+        Number of top words to be extracted from each topic.
     logger : Logger, defaults to logger
         logger.
     """
@@ -152,7 +152,11 @@ class LDAOptimization:
 
         # Coherence Score
         coherence_model_cv = CoherenceModel(
-            model=lda_model, texts=vec, dictionary=id2word, coherence="c_v", topn=self.topn
+            model=lda_model,
+            texts=vec,
+            dictionary=id2word,
+            coherence="c_v",
+            topn=self.topn,
         )
         coherence_cv = coherence_model_cv.get_coherence()
 
@@ -232,7 +236,7 @@ class LDAOptimization:
 if __name__ == "__main__":
     optimizer = LDAOptimization(
         nlp_normalization_method="lemmatization",  # Method to choose: either stemmer or lemmatization
-        topn=10, # Number of top words to be extracted from each topic.
+        topn=10,  # Number of top words to be extracted from each topic.
         n_trials=30,  # Number of trials for optimization
     )
     optimizer.run()

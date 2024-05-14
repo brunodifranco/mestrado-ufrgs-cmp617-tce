@@ -174,14 +174,14 @@ class DataTCE:
             if file.endswith(".csv")
         ]
 
-        df_final = pd.concat(dfs, ignore_index=True)   
-        
+        df_final = pd.concat(dfs, ignore_index=True)
+
         # Getting only those bids where `CD_TIPO_FASE_ATUAL=ADH`,
         # which are the ones that have been approved,
         # according to the TCE documentation in page 27.
-             
+
         df_final = df_final[df_final["CD_TIPO_FASE_ATUAL"] == "ADH"]
-        
+
         return df_final
 
     def saves_df_to_csv(self, df_final: DataFrame):
