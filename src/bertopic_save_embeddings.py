@@ -9,6 +9,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from datasets import Dataset
 from cuml.preprocessing import normalize
+# from sklearn.preprocessing import normalize # Run this version if you don't have GPU
 from sklearn.feature_extraction.text import CountVectorizer
 from utils.utils import logger
 from data_cleaning import DataCleaning

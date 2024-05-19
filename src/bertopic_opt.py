@@ -11,6 +11,8 @@ from bertopic import BERTopic
 from bertopic.representation import KeyBERTInspired
 from cuml.manifold import UMAP
 from cuml.cluster import HDBSCAN, KMeans
+# from sklearn.cluster import HDBSCAN, KMeans # Run this version if you don't have GPU
+# from umap import UMAP # Run this version if you don't have GPU
 from sklearn.feature_extraction.text import CountVectorizer
 from gensim.corpora import Dictionary
 from gensim.models import CoherenceModel

@@ -2,12 +2,14 @@ import pickle
 from pathlib import Path
 from typing import List, Tuple, Union
 from torch import Tensor
+import pandas as pd
 import numpy as np
 from bertopic import BERTopic
 from pathlib import Path
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from cuml.cluster import HDBSCAN
+# from sklearn.cluster import HDBSCAN  # Run this version if you don't have GPU
 from gensim.corpora import Dictionary
 from gensim.models import CoherenceModel
 from sklearn.feature_extraction.text import CountVectorizer

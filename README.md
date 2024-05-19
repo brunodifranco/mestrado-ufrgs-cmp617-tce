@@ -1,68 +1,87 @@
+##  Assessing Topic Modeling Techniques on Brazilian Public Bidding Data: A Comparative Study of LDA and BERTopic
 
-# mestrado-ufrgs-cmp617-tce
+### 1. **Reproduce Code**
 
-## Falta
+#### 1.1. Setup Libraries
 
+1. Create a virtual environment:
+    ```bash
+    python -m venv venv
+    ```
 
-Fazer os plots com PCA e UMAP, alem das word clouds
+2. Install requirements:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
+3. Download spaCy language model:
+    ```bash
+    python -m spacy download pt_core_news_md
+    ```
 
-Depois disso tudo, só precisamos escrever o artigo
+#### 1.2. Get the Data
 
+In Linux:
+1. Install `curl`:
+    ```bash
+    sudo apt install curl
+    ```
 
-## obs
+2. Run the data retrieval script:
+    ```bash
+    python get_data_tce.py
+    ```
 
-instalacao spacy
+Alternatively, download the data from [Google Drive](https://drive.google.com/file/d/1w9Y5qKA2sRa9PjwAedeRWDPmGmGnFdwc/view?usp=sharing) and place it in the `/data` directory.
 
-python -m spacy download pt_core_news_md
+#### 1.3. Installing CUML (If You Have a GPU)
 
-## Sobre os dados
+When running the HDBSCAN, K-Means, and UMAP models, the `CUML` library is used. It's designed to run on GPUs, making computation much faster. If you don't have a GPU, the equivalent libraries from `sklearn` are commented in the code, so you can just uncomment them.
 
-foram separados 2021 a 2024, e somente aquelas licitacoes aprovadas
+Check how to install `CUML` for your system [here](https://docs.rapids.ai/install#rapids-release-selector).
 
+For my machine, the installation was:
 
-## IMPORTANTE MENCIONAR 
-
-"But by its very nature, LDA is a generative probabilistic method. Simplifying a little bit here, each time you use it, many Dirichlet distributions are generated, followed by inference steps"
-
-https://stackoverflow.com/questions/51956153/gensim-lda-coherence-values-not-reproducible-between-runs
-
-## Pra ter acesso aos dados pre tratados:
-
-No linux:
-- Precisa ter o curl instalado `sudo apt install curl`
-- Executar o script `get_data_tce.py`
-
-Ou (em qualquer OS):
-
-Tem no [google drive](https://drive.google.com/file/d/1w9Y5qKA2sRa9PjwAedeRWDPmGmGnFdwc/view?usp=sharing)
-
-e colocar na pasta /data
-
-
-## NA INSTALACAO DO CUML
-
-So escrever assim "checkout how to install for your system in https://docs.rapids.ai/install#rapids-release-selector"
-
-no meu caso foi 
-
+```
 pip install \
-    --extra-index-url=https://pypi.nvidia.com \
-    cudf-cu11==24.4.* cuml-cu11==24.4.*
-    
+  --extra-index-url=https://pypi.nvidia.com \
+  cudf-cu11==24.4.* cuml-cu11==24.4.*
+```
 
-outra coisa, se tiver problema com bulding `ERROR: Could not build wheels for hdbscan, which is required to install pyproject.toml-based projects` precisa rodar `sudo apt-get install python3-dev`
+Note: If you encounter this error `ERROR: Could not build wheels for hdbscan, which is required to install pyproject.toml-based projects`, execute:
 
-## Obs
+ ```
+ sudo apt-get install python3-dev
+ ```
 
-Devemos pegar o modelo e rodar x vezes, pra termos uma média +- std do modelo, justamente pela coherence ser um pouco variável
+### 2. **About the Scripts**
 
-https://stackoverflow.com/questions/51956153/gensim-lda-coherence-values-not-reproducible-between-runs
+#### 2.1. Load and Clean Data
 
+- `get_data_tce.py`: Loads data from TCE, saving it to `data/tce_licitations.csv`.
+  
+- `data_cleaning.py`: Cleans the data.
 
-## POR QUE FOI UTILIZADO CV pra otimizar no optuna?
+#### 2.2. LDA
 
-"Our analyses demonstrate that the metrics CV and CP are more sensitive to noise. That confirms their applicability in scenarios where the user wants to highlight topics with some unrelated words", conforme o artigo https://sol.sbc.org.br/journals/index.php/jidm/article/download/2181/2049/11581
+- `lda_opt.py`: Runs Optuna optimization for the LDA model.
+  
+- `lda_runs.py`: Runs the LDA model with the best parameters N times to average the results.
+  
+- `lda_fit.py`: Fits a single LDA model, if needed.
+  
+- `evaluate_lda.py`: Functions to evaluate the model.
+  
+- `research/lda_eval.ipynb`: Notebook to evaluate the model using `evaluate_lda.py`.
 
-Por isso, será o escolhido.
+#### 2.3. BERTopic
 
+- `bertopic_save_embeddings.py`: Saves the BERTopic embeddings, vectorizer model, and documents in pickle format. This is done to make optimization faster, so we don't have to get the embeddings every time when optimizing.
+  
+- `bertopic_opt.py`: Runs Optuna optimization for the BERTopic model.
+  
+- `bertopic_fit.py`: Fits a single BERTopic model, if needed (only available for HDBSCAN clustering model).
+  
+- `evaluate_bertopic.py`: Functions to evaluate the model.
+  
+- `research/bertopic_eval.ipynb`: Notebook to evaluate the model using `evaluate_bertopic.py`.
