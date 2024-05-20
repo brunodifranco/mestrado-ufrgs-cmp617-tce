@@ -32,7 +32,7 @@ In Linux:
     python get_data_tce.py
     ```
 
-Alternatively, download the data from [Google Drive](https://drive.google.com/file/d/1w9Y5qKA2sRa9PjwAedeRWDPmGmGnFdwc/view?usp=sharing) and place it in the `/data` directory.
+Alternatively, download the data from [Google Drive](https://drive.google.com/file/d/15OkK4nUq0U9M6P1YJHz12dqI4RBNLNYz/view?usp=sharing) and place it in the `/data` directory.
 
 #### 1.3. Installing CUML (If You Have a GPU)
 
